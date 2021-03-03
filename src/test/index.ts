@@ -1,7 +1,7 @@
 const async = require('async')
 const mongoose = require('mongoose')
-const { plugin } = require('../lib')
-let connection;
+const { plugin } = require('../')
+let connection: any;
 const should = require('chai').should()
 
 before(function (done) {
@@ -13,7 +13,7 @@ before(function (done) {
 });
 
 after(function (done) {
-  connection.db.dropDatabase(function (err) {
+  connection.db.dropDatabase(function (err:any) {
     if (err) return done(err);
     connection.close(done);
   });
@@ -44,16 +44,16 @@ describe('mongoose-serial', function () {
 
     // insert some invoices
     async.series({
-      invoice1: function (cb) {
+      invoice1: function (cb: any) {
         invoice1.save(cb);
       },
-      invoice2: function (cb) {
+      invoice2: function (cb: any) {
         invoice2.save(cb);
       }
     }, assert);
 
     // assert
-    function assert(err, results) {
+    function assert(err: any, results:any) {
       should.not.exist(err);
       results.invoice1.should.have.property('ht', 10000);
       results.invoice2.should.have.property('ht', 12000);

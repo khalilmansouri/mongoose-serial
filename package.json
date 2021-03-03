@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "mocha -r ts-node/register src/test/index.ts",
     "build": "tsc"
   },
   "repository": {
@@ -19,10 +19,13 @@
   },
   "homepage": "https://github.com/khalilmansouri/ts-boiler#readme",
   "devDependencies": {
+    "@types/chai": "^4.2.15",
+    "@types/mocha": "^8.2.1",
     "async": "^3.2.0",
     "chai": "^4.3.1",
     "mocha": "^8.3.0",
     "mongoose": "^5.11.18",
+    "ts-node": "^9.1.1",
     "typescript": "^4.1.2"
   },
   "dependencies": {}
