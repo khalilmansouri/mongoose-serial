@@ -13,15 +13,15 @@ before(function (done) {
 });
 
 after(function (done) {
-  connection.db.dropDatabase(function (err:any) {
+  connection.db.dropDatabase(function (err: any) {
     if (err) return done(err);
     connection.close(done);
   });
 });
 
 afterEach(function (done) {
-  connection.model('User').collection.drop(function () {
-    delete connection.models.User;
+  connection.model('Invoice').collection.drop(function () {
+    delete connection.models.Invoice;
     done()
   });
 });
@@ -36,10 +36,10 @@ describe('mongoose-serial', function () {
       ht: Number,
       ttc: Number,
     });
-    invoiceSchema.plugin(plugin, {field:'serial', prefix:"USER", format:"PREFIX"});
-    var User = connection.model('User', invoiceSchema),
-    invoice1 = new User({ ht: 10000, ttc: 10010 }),
-    invoice2 = new User({ ht: 12000, ttc: 12010 });
+    invoiceSchema.plugin(plugin, { field: 'serial', prefix: "Invoice", format: "PREFIX" });
+    var Invoice = connection.model('Invoice', invoiceSchema),
+      invoice1 = new Invoice({ ht: 10000, ttc: 10010 }),
+      invoice2 = new Invoice({ ht: 12000, ttc: 12010 });
 
 
     // insert some invoices
@@ -53,7 +53,7 @@ describe('mongoose-serial', function () {
     }, assert);
 
     // assert
-    function assert(err: any, results:any) {
+    function assert(err: any, results: any) {
       should.not.exist(err);
       results.invoice1.should.have.property('ht', 10000);
       results.invoice2.should.have.property('ht', 12000);
