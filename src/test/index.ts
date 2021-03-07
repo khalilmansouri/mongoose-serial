@@ -1,8 +1,13 @@
+import { expect } from "chai";
+
 const async = require('async')
 const mongoose = require('mongoose')
-const { plugin } = require('../')
+const { plugin, addZeros, extractCounter } = require('../')
 let connection: any;
 const should = require('chai').should()
+
+
+let options = { field: 'serial', prefix: "Invoice", format: "PREFIX", separator: "-", digits: 5 }
 
 before(function (done) {
   connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial', { useNewUrlParser: true, useUnifiedTopology: true });
@@ -19,12 +24,34 @@ after(function (done) {
   });
 });
 
-afterEach(function (done) {
-  connection.model('Invoice').collection.drop(function () {
-    delete connection.models.Invoice;
-    done()
-  });
-});
+// afterEach(function (done) {
+//   connection.model('Invoice').collection.drop(function () {
+//     delete connection.models.Invoice;
+//     done()
+//   });
+// });
+
+
+describe('helper-functions', function () {
+  it('should add lead zeros to integer number', () => {
+    let count = 3
+    let size = 5
+    let ret = addZeros(count, size)
+    expect(ret).to.equal('00003')
+
+    count = 300
+    size = 6
+    ret = addZeros(count, size)
+    expect(ret).to.equal('000300')
+
+  })
+
+  it('should extract and increment counter number', () => {
+    let serial = "INVOICE-000301"
+    let ret = extractCounter(options, serial)
+    expect(ret).to.equal('00302')
+  })
+})
 
 describe('mongoose-serial', function () {
 
@@ -36,10 +63,12 @@ describe('mongoose-serial', function () {
       ht: Number,
       ttc: Number,
     });
-    invoiceSchema.plugin(plugin, { field: 'serial', prefix: "Invoice", format: "PREFIX" });
-    var Invoice = connection.model('Invoice', invoiceSchema),
-      invoice1 = new Invoice({ ht: 10000, ttc: 10010 }),
-      invoice2 = new Invoice({ ht: 12000, ttc: 12010 });
+    invoiceSchema.plugin(plugin, options);
+    let Invoice = connection.model('Invoice', invoiceSchema);
+    let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
+    let invoice2 = new Invoice({ ht: 12000, ttc: 12010 });
+    let invoice3 = new Invoice({ ht: 13000, ttc: 12010 });
+    let invoice4 = new Invoice({ ht: 14000, ttc: 12010 });
 
 
     // insert some invoices
@@ -49,6 +78,12 @@ describe('mongoose-serial', function () {
       },
       invoice2: function (cb: any) {
         invoice2.save(cb);
+      },
+      invoice3: function (cb: any) {
+        invoice3.save(cb);
+      },
+      invoice4: function (cb: any) {
+        invoice4.save(cb);
       }
     }, assert);
 
