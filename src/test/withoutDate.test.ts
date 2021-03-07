@@ -2,15 +2,15 @@ import { expect } from "chai";
 
 const async = require('async')
 const mongoose = require('mongoose')
-const { plugin, addZeros, extractCounter } = require('../')
+const { plugin } = require('../')
 let connection: any;
 const should = require('chai').should()
 
 
-let options = { field: 'serial', prefix: "Invoice", format: "PREFIX", separator: "-", digits: 5 }
+let options = { field: 'serial', prefix: "Invoice", separator: "-", digits: 5 }
 
 before(function (done) {
-  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial', { useNewUrlParser: true, useUnifiedTopology: true });
+  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-without-date', { useNewUrlParser: true, useUnifiedTopology: true });
   connection.on('error', console.error.bind(console));
   connection.once('open', function () {
     done();
@@ -24,36 +24,9 @@ after(function (done) {
   });
 });
 
-// afterEach(function (done) {
-//   connection.model('Invoice').collection.drop(function () {
-//     delete connection.models.Invoice;
-//     done()
-//   });
-// });
 
 
-describe('helper-functions', function () {
-  it('should add lead zeros to integer number', () => {
-    let count = 3
-    let size = 5
-    let ret = addZeros(count, size)
-    expect(ret).to.equal('00003')
-
-    count = 300
-    size = 6
-    ret = addZeros(count, size)
-    expect(ret).to.equal('000300')
-
-  })
-
-  it('should extract and increment counter number', () => {
-    let serial = "INVOICE-000301"
-    let ret = extractCounter(options, serial)
-    expect(ret).to.equal('00302')
-  })
-})
-
-describe('mongoose-serial', function () {
+describe('Mongoose-serial : Without dates', function () {
 
   it('should save the Invoices', function (done) {
 
@@ -94,7 +67,6 @@ describe('mongoose-serial', function () {
       results.invoice2.should.have.property('ht', 12000);
       done();
     }
-
   });
 
 })

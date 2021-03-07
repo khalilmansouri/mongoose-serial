@@ -1,23 +1,23 @@
 {
-  "name": "ts-boiler",
+  "name": "mongoose-serial",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register src/test/index.ts",
+    "test": "mocha -r ts-node/register src/**/*.test.ts",
     "build": "tsc"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/khalilmansouri/ts-boiler.git"
+    "url": "git+https://github.com/khalilmansouri/mongoose-serial.git"
   },
   "keywords": [],
   "author": "Khalil Mansouri",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/khalilmansouri/ts-boiler/issues"
+    "url": "https://github.com/khalilmansouri/mongoose-serial/issues"
   },
-  "homepage": "https://github.com/khalilmansouri/ts-boiler#readme",
+  "homepage": "https://github.com/khalilmansouri/mongoose-serial#readme",
   "devDependencies": {
     "@types/chai": "^4.2.15",
     "@types/mocha": "^8.2.1",
