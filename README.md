@@ -13,7 +13,7 @@ let invoiceSchema = new mongoose.Schema({
   ttc: Number,
 });
 
-invoiceSchema.plugin(mongooseSerial, { field:"serrial", prefix:"INVOICE", initCount:"monthly" , separator: "-", digits:5});
+invoiceSchema.plugin(mongooseSerial, { field:"serial", prefix:"INVOICE", initCount:"monthly" , separator: "-", digits:5});
 
 
 let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
