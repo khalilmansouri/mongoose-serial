@@ -6,10 +6,10 @@ let connection: any;
 const should = require('chai').should()
 
 
-let options = { field: 'serial', separator: "-", digits: 5, initCounter: "yearly" }
+let options = { field: 'serial', separator: "-", digits: 13 }
 
 before(function (done) {
-  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-wihtout-prefix', { useNewUrlParser: true, useUnifiedTopology: true });
+  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-wihtout-prefix-and-date', { useNewUrlParser: true, useUnifiedTopology: true });
   connection.on('error', console.error.bind(console));
   connection.once('open', function () {
     done();
@@ -24,7 +24,7 @@ after(function (done) {
 });
 
 
-describe('Mongoose-serial : Without prefix', function () {
+describe('Mongoose-serial : Without prefix and date', function () {
 
   it('should save the Invoices', function (done) {
 

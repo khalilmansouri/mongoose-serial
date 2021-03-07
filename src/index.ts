@@ -45,9 +45,7 @@ export const extractCounter = (options: Options, serial: string): string => {
 
   if (serial !== null) {
     counter = serial.split(separator).slice(-1).join(separator)
-
     let chunks = serial.split(separator)
-    // if (!prefix && !chunks.length) {}
     switch (initCounter) {
       case InitCounter.YEARLY:
         let currentYear = new Date().getFullYear().toString()
@@ -63,9 +61,7 @@ export const extractCounter = (options: Options, serial: string): string => {
         break
       case InitCounter.DAILY:
         let currentDay = addZeros(new Date().getDate(), 2)
-        // console.log({ currentDay })
         let day = chunks[chunks.length - 2]
-        // console.log({ day })
         if (currentDay !== day)
           return addZeros(1, digits)
         break
@@ -102,18 +98,20 @@ export const plugin = (schema: Schema, options: Options) => {
     switch (initCounter) {
       case InitCounter.YEARLY:
         dating = new Date().getFullYear().toString()
+        break
       case InitCounter.MONTHLY:
         dating = [new Date().getFullYear().toString(), addZeros(new Date().getMonth() + 1, 2)].join(separator)
+        break
       case InitCounter.DAILY:
         dating = [new Date().getFullYear().toString(), addZeros(new Date
           ().getMonth() + 1, 2), addZeros(new Date().getDate(), 2)].join(separator)
+        break
     }
     let t = []
     if (prefix) t.push(prefix)
     if (dating) t.push(dating)
     t.push(counter)
     doc[field] = t.join(separator)
-    // console.log(doc[field])
     next()
   })
 }
