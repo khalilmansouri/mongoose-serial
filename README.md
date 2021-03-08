@@ -2,6 +2,9 @@
 
 Mongoose Serial number generator plugin based on multiple format
 
+[![codecov](https://codecov.io/gh/khalilmansouri/mongoose-serial/branch/master/graph/badge.svg?token=970SOP1NKU)](https://codecov.io/gh/khalilmansouri/mongoose-serial)
+[![Build Status](https://travis-ci.org/khalilmansouri/mongoose-serial.svg?branch=master)](https://travis-ci.org/khalilmansouri/mongoose-serial)
+
 ## Exmaple
 
 Basic : 
