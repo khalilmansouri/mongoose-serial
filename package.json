@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "mocha -r ts-node/register src/**/*.test.ts",
+    "pretest": "tsc -p .",
+    "test": "nyc mocha -r ts-node/register src/**/*.test.ts",
+    "posttest": "nyc report --reporter=json",
     "build": "tsc"
   },
   "repository": {
@@ -23,8 +25,10 @@
     "@types/mocha": "^8.2.1",
     "async": "^3.2.0",
     "chai": "^4.3.1",
+    "codecov": "^3.8.1",
     "mocha": "^8.3.0",
     "mongoose": "^5.11.18",
+    "nyc": "^15.1.0",
     "prettier": "^2.2.1",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.2"

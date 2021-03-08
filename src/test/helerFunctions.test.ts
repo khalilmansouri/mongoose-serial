@@ -20,7 +20,7 @@ describe('Helper-functions', function () {
   it('should extract and increment counter number daily', () => {
     let serial = ["INVOICE", "2021", "03", "07", "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: InitCounter.DAILY }, serial)
-    expect(ret).to.equal('00302')
+    expect(ret).to.equal('00001')
   })
 
   it('should extract and increment counter number monthly', () => {

@@ -1,3 +1,9 @@
+# Dependency directory
 node_modules
 
 /lib
+
+# Coverage directory used by tools like istanbul
+coverage
+.nyc_output
+coverage.*
