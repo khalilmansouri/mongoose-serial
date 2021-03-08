@@ -1,6 +1,6 @@
 {
   "name": "mongoose-serial",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -13,7 +13,12 @@
     "type": "git",
     "url": "git+https://github.com/khalilmansouri/mongoose-serial.git"
   },
-  "keywords": [],
+  "keywords": [
+    "mongoose",
+    "serial",
+    "serial-number",
+    "auto-increment"
+  ],
   "author": "Khalil Mansouri",
   "license": "MIT",
   "bugs": {
