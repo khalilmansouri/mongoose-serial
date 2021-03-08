@@ -7,5 +7,6 @@ install:
   - npm install
 
 script:
+  - npm install codecov -g
   - npm run test
 
