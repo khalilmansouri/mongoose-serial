@@ -47,8 +47,10 @@ await invoice2.save() // { serialNumber: "0000000002:", ht: 10000, ttc: 10010}
 Advanced :
 ```ts
 const mongooseSerial = require("mongoose-serial")
+// mongodb database uri
+const DB_URI = process.env.DB_URI
 // mongoose connedtion
-let connection = mongoose.createConnection('mongodb://127.0.0.1/db', { useNewUrlParser: true, useUnifiedTopology: true });
+let connection = mongoose.createConnection(DB_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 let invoiceSchema = new mongoose.Schema({
   serialNumber: String,
@@ -64,11 +66,10 @@ let billSchema = new mongoose.Schema({
 // Generate serial number with the prefix "INVOICE" and initialte the the counter that contains 5 digits every new month, all separated by the separator "-"
 /**
  * Options:
- * field : Specialy the field name to be a serialized, the field must be type string in mongoose schema
- * prefix : string the prefix the serial number 
- * initCount : init the counter to one monthly or daily or yearly
- * separator to separate deferente part of the serial number
- * digits : number of digits the counter shoud have 
+ *    field :  The field name to be set as serial number, the field must be type string in mongoose schema
+ *    prefix : String the prefix the serial number 
+ *    initCount : Init the counter to one monthly or daily or yearly separator to separate deferente part of the serial number
+ *    digits : Number of digits the counter shoud have 
  */
 let Invoice = connection.model('Invoice', invoiceSchema);
 invoiceSchema.plugin(mongooseSerial, { field:"serialNumber", prefix:"INVOICE", initCount:"monthly" , separator: "-", digits:5});
