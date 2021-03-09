@@ -31,9 +31,14 @@ describe('Helper-functions', function () {
 
   it('should extract and increment counter number yearly', () => {
     let serial = ["INVOICE", "2021", "00301"].join(options.separator)
-    // console.log({ ...options, initCounter: "yearly" })
     let ret = extractCounter({ ...options, initCounter: "yearly" }, serial)
     expect(ret).to.equal('00302')
+  })
+
+  it('should extract and increment counter number with 1o digits', () => {
+    let serial = ["INVOICE", "2021", "00301"].join(options.separator)
+    let ret = extractCounter({ ...options, initCounter: undefined, digits: undefined }, serial)
+    expect(ret).to.equal('0000000302')
   })
 })
 

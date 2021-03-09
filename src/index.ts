@@ -40,7 +40,7 @@ export const addZeros = (counter: number, size: number) => {
  * @param serial 
  */
 export const extractCounter = (options: Options, serial: string): string => {
-  let { prefix, separator, initCounter, digits } = options
+  let { separator, initCounter, digits = 10 } = options
   let counter: string
 
   if (serial !== null) {
