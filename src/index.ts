@@ -88,7 +88,12 @@ export const plugin = (schema: Schema, options: Options) => {
     }
 
     // get the last inserted document
-    let lastDoc = await (<any>this).constructor.findOne({}).sort({ [`${field}`]: -1 })
+    let lastDoc;
+    try {
+      lastDoc = await (<any>this).constructor.findOne({}).sort({ [`${field}`]: -1 })
+    } catch (error) {
+      throw error
+    }
     let serial = lastDoc ? lastDoc[field] : null
 
     counter = extractCounter(options, serial)
@@ -103,8 +108,7 @@ export const plugin = (schema: Schema, options: Options) => {
         dating = [new Date().getFullYear().toString(), addZeros(new Date().getMonth() + 1, 2)].join(separator)
         break
       case InitCounter.DAILY:
-        dating = [new Date().getFullYear().toString(), addZeros(new Date
-          ().getMonth() + 1, 2), addZeros(new Date().getDate(), 2)].join(separator)
+        dating = [new Date().getFullYear().toString(), addZeros(new Date().getMonth() + 1, 2), addZeros(new Date().getDate(), 2)].join(separator)
         break
     }
     let t = []
