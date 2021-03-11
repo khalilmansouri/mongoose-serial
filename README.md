@@ -17,6 +17,7 @@ Mongoose Serial number generator plugin based on multiple format
 
 Basic : 
 ```ts
+const mongoose = require("mongoose")
 const mongooseSerial = require("mongoose-serial")
 // mongodb database uri
 const DB_URI = process.env.DB_URI
@@ -46,6 +47,7 @@ await invoice2.save() // { serialNumber: "0000000002:", ht: 10000, ttc: 10010}
 
 Advanced :
 ```ts
+const mongoose = require("mongoose")
 const mongooseSerial = require("mongoose-serial")
 // mongodb database uri
 const DB_URI = process.env.DB_URI
