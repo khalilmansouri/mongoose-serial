@@ -6,7 +6,7 @@ let connection: any;
 const should = require('chai').should()
 
 
-let options = { field: 'serial', separator: "-", digits: 5, initCounter: "yearly", updateExistingRecord: false}
+let options = { field: 'serial', separator: "-", digits: 5, initCounter: "yearly", ignoreIncrementOnEdit: false}
 
 before(function (done) {
   connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-wihtout-prefix', { useNewUrlParser: true, useUnifiedTopology: true });

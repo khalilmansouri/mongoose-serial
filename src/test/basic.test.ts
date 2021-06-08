@@ -7,7 +7,7 @@ let connection: any;
 const should = require('chai').should()
 
 
-let options = { field: 'serial', prefix: "Invoice", separator: "-", digits: 5, initCounter: "monthly", updateExistingRecord: false }
+let options = { field: 'serial', prefix: "Invoice", separator: "-", digits: 5, initCounter: "monthly", ignoreIncrementOnEdit: false }
 
 // create invoice model
 var invoiceSchema = new mongoose.Schema({
@@ -74,7 +74,7 @@ describe('Mongoose-serial', function () {
   it('should not increment Invoices on edit operation', function (done) {
 
     // set updateExisitingRecord to true
-    options.updateExistingRecord = true;
+    options.ignoreIncrementOnEdit = true;
 
     invoiceSchema.plugin(plugin, options);
     let Invoice = connection.model('Invoice2', invoiceSchema);
