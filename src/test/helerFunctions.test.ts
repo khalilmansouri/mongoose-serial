@@ -1,7 +1,7 @@
 import { expect } from "chai";
 const { addZeros, extractCounter, InitCounter } = require('../')
 
-let options = { field: 'serial', prefix: "Invoice", format: "PREFIX", separator: "-", digits: 5, initCounter: "daily" }
+let options = { field: 'serial', prefix: "Invoice", format: "PREFIX", separator: "-", digits: 5, initCounter: "daily", updateExistingRecord: false}
 
 describe('Helper-functions', function () {
   it('should add lead zeros to integer number', () => {
