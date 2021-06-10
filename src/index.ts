@@ -79,7 +79,7 @@ export const extractCounter = (options: Options, serial: string): string => {
  * @param options 
  */
 export const plugin = (schema: Schema, options: Options) => {
-  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit } = options
+  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit = true } = options
   let counter;
   schema.pre("save", async function (next) {
     let doc: any = this
