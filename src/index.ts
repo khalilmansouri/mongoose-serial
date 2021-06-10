@@ -20,7 +20,8 @@ export type Options = {
   format: string,
   separator: string,
   initCounter: "yearly" | "monthly" | "daily" | "hourly"
-  digits: number
+  digits: number,
+  ignoreIncrementOnEdit: boolean
 }
 
 /**
@@ -40,7 +41,7 @@ export const addZeros = (counter: number, size: number) => {
  * @param serial 
  */
 export const extractCounter = (options: Options, serial: string): string => {
-  let { separator, initCounter, digits = 10 } = options
+  let { separator, initCounter, digits = 10, ignoreIncrementOnEdit } = options
   let counter: string
 
   if (serial !== null) {
@@ -78,7 +79,7 @@ export const extractCounter = (options: Options, serial: string): string => {
  * @param options 
  */
 export const plugin = (schema: Schema, options: Options) => {
-  let { field, prefix, separator, initCounter } = options
+  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit = true } = options
   let counter;
   schema.pre("save", async function (next) {
     let doc: any = this
@@ -97,6 +98,13 @@ export const plugin = (schema: Schema, options: Options) => {
     let serial = lastDoc ? lastDoc[field] : null
 
     counter = extractCounter(options, serial)
+    
+    // if doc[field] has some value then
+    // we are editing an existing record
+    if(ignoreIncrementOnEdit && doc[field] && doc[field].length > 0) {
+        next()
+        return
+    }
 
     // retrive the last count
     let dating;
