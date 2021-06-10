@@ -41,7 +41,7 @@ export const addZeros = (counter: number, size: number) => {
  * @param serial 
  */
 export const extractCounter = (options: Options, serial: string): string => {
-  let { separator, initCounter, digits = 10, ignoreIncrementOnEdit = true } = options
+  let { separator, initCounter, digits = 10, ignoreIncrementOnEdit } = options
   let counter: string
 
   if (serial !== null) {
@@ -79,7 +79,7 @@ export const extractCounter = (options: Options, serial: string): string => {
  * @param options 
  */
 export const plugin = (schema: Schema, options: Options) => {
-  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit } = options
+  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit = true } = options
   let counter;
   schema.pre("save", async function (next) {
     let doc: any = this
