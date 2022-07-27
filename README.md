@@ -31,8 +31,8 @@ let invoiceSchema = new mongoose.Schema({
   ttc: Number,
 });
 
-let Invoice = connection.model('Invoice', invoiceSchema);
 invoiceSchema.plugin(mongooseSerial, { field:"serialNumber"});
+let Invoice = connection.model('Invoice', invoiceSchema);
 
 
 let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
@@ -73,11 +73,11 @@ let billSchema = new mongoose.Schema({
  *    initCount : Init the counter to one monthly or daily or yearly separator to separate deferente part of the serial number
  *    digits : Number of digits the counter shoud have 
  */
-let Invoice = connection.model('Invoice', invoiceSchema);
 invoiceSchema.plugin(mongooseSerial, { field:"serialNumber", prefix:"INVOICE", initCount:"monthly" , separator: "-", digits:5});
+let Invoice = connection.model('Invoice', invoiceSchema);
 
-let Bill = connection.model('Bill', invoiceSchema);
 invoiceSchema.plugin(mongooseSerial, { field:"serialNumber", prefix:"BILL", initCount:"yearly" , separator: "/", digits:7});
+let Bill = connection.model('Bill', invoiceSchema);
 
 
 let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
