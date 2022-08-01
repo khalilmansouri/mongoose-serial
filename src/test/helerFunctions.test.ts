@@ -24,18 +24,20 @@ describe('Helper-functions', function () {
   })
 
   it('should extract and increment counter number monthly', () => {
-    let serial = ["INVOICE", "2021", "06", "00301"].join(options.separator)
+    const month = addZeros(new Date().getMonth() + 1, 2)
+    let serial = ["INVOICE", "2021", month, "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: "monthly" }, serial)
     expect(ret).to.equal('00302')
   })
 
   it('should extract and increment counter number yearly', () => {
-    let serial = ["INVOICE", "2021", "00301"].join(options.separator)
+    const year = new Date().getFullYear().toString()
+    let serial = ["INVOICE", year, "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: "yearly" }, serial)
     expect(ret).to.equal('00302')
   })
 
-  it('should extract and increment counter number with 1o digits', () => {
+  it('should extract and increment counter number with 10 digits', () => {
     let serial = ["INVOICE", "2021", "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: undefined, digits: undefined }, serial)
     expect(ret).to.equal('0000000302')
