@@ -21,7 +21,7 @@ describe('Helper-functions', function () {
       const date = new Date().getDate();
     let serial = ["INVOICE", "2021", "03", date, "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: InitCounter.DAILY }, serial)
-    expect(ret).to.equal('00001')
+    expect(ret).to.equal('00302')
   })
 
   it('should extract and increment counter number monthly', () => {
