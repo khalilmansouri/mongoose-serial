@@ -12,8 +12,9 @@ Mongoose Serial number generator plugin based on multiple format
 
 >npm install mongoose-serial
 
+## Usage
 
-## Exmaple
+### Basic Example
 
 Basic : 
 ```ts
@@ -96,17 +97,30 @@ await bill2.save() // { billNumber: "BILL/2021/0000002:", amount: 120}
 
 ```
 
-### Contributing
-- Fork this Repo first
-- Clone your Repo
-- Install dependencies by `$ npm install`
-- Checkout a feature branch
-- Feel free to add your features
-- Make sure your features are fully tested
-- Publish your local branch, Open a pull request
-- Enjoy hacking <3
+### Configuration Options
 
-### The MIT License (MIT)
+| Option | Type | Description | Default |
+|--------|------|-------------|---------|
+| `field` | String | The field name to be set as serial number (must be type String in schema) | Required |
+| `prefix` | String | Prefix for the serial number | None |
+| `initCount` | String | When to reset the counter: "daily", "monthly", or "yearly" | None (never resets) |
+| `separator` | String | Character(s) to separate different parts of the serial number | None |
+| `digits` | Number | Number of digits the counter should have (will be zero-padded) | 10 |
+
+## Contributing
+
+1. Fork this repository
+2. Clone your forked repository
+3. Install dependencies with `npm install`
+4. Create a feature branch (`git checkout -b feature/amazing-feature`)
+5. Make your changes and write tests
+6. Commit your changes (`git commit -m 'Add some amazing feature'`)
+7. Push to the branch (`git push origin feature/amazing-feature`)
+8. Open a Pull Request
+
+## License
+
+MIT License
 
 Copyright (c) 2021 KHALIL MANSOURI
 
