@@ -1,13 +1,23 @@
 {
   "name": "mongoose-serial",
-  "version": "1.0.5",
-  "description": "",
-  "main": "index.js",
+  "version": "1.1.0",
+  "description": "Mongoose plugin for generating auto-incrementing serial numbers with flexible formatting options",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "pretest": "tsc -p .",
+    "pretest": "npm run build",
     "test": "nyc mocha -r ts-node/register src/**/*.test.ts",
+    "test:unit": "mocha -r ts-node/register src/test/unit.test.ts src/test/integration.test.ts",
+    "test:integration": "mocha -r ts-node/register src/test/basic.test.ts src/test/withoutDate.test.ts src/test/withoutPrefix.test.ts src/test/withoutPrefixAndDate.test.ts",
     "posttest": "nyc report --reporter=json",
-    "build": "tsc"
+    "build": "tsc",
+    "clean": "rm -rf lib",
+    "prebuild": "npm run clean",
+    "prepublishOnly": "npm run build",
+    "lint": "eslint src/**/*.ts",
+    "lint:fix": "eslint src/**/*.ts --fix",
+    "format": "prettier --write src/**/*.ts",
+    "dev": "tsc --watch"
   },
   "repository": {
     "type": "git",
@@ -17,7 +27,10 @@
     "mongoose",
     "serial",
     "serial-number",
-    "auto-increment"
+    "auto-increment",
+    "plugin",
+    "typescript",
+    "mongodb"
   ],
   "author": "Khalil Mansouri",
   "license": "MIT",
@@ -26,17 +39,29 @@
   },
   "homepage": "https://github.com/khalilmansouri/mongoose-serial#readme",
   "devDependencies": {
-    "@types/chai": "^4.2.15",
-    "@types/mocha": "^8.2.1",
-    "async": "^3.2.0",
-    "chai": "^4.3.1",
-    "codecov": "^3.8.1",
-    "mocha": "^8.3.0",
-    "mongoose": "^6.5.1",
+    "@types/chai": "^4.3.15",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.14.9",
+    "@typescript-eslint/eslint-plugin": "^7.15.0",
+    "@typescript-eslint/parser": "^7.15.0",
+    "async": "^3.2.5",
+    "chai": "^4.4.1",
+    "codecov": "^3.8.3",
+    "eslint": "^8.57.0",
+    "mocha": "^10.4.0",
+    "mongoose": "^8.0.3",
     "nyc": "^15.1.0",
-    "prettier": "^2.2.1",
-    "ts-node": "^9.1.1",
-    "typescript": "^4.1.2"
+    "prettier": "^3.2.5",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.5"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "lib",
+    "README.md",
+    "LICENCE"
+  ]
 }

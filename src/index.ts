@@ -1,130 +1,238 @@
-import * as mongoose from "mongoose"
-import { Schema } from "mongoose"
+import * as mongoose from "mongoose";
+import { Schema, Document } from "mongoose";
 
 /**
- * 
+ * Counter initialization options
  */
 export enum InitCounter {
   YEARLY = "yearly",
   MONTHLY = "monthly",
   DAILY = "daily",
-  HOURLY = "hourly"
+  HOURLY = "hourly",
+  NEVER = "never"
 }
 
 /**
- * 
+ * Plugin options interface
  */
-export type Options = {
-  field: string,
-  prefix: string,
-  format: string,
-  separator: string,
-  initCounter: "yearly" | "monthly" | "daily" | "hourly"
-  digits: number,
-  ignoreIncrementOnEdit: boolean
+export interface SerialOptions {
+  /** The field name to be set as serial number (must be type string in mongoose schema) */
+  field: string;
+  /** String prefix for the serial number */
+  prefix?: string;
+  /** Custom format string (e.g., "YYYY-MM-DD") */
+  format?: string;
+  /** Separator to separate different parts of the serial number */
+  separator?: string;
+  /** When to reset the counter */
+  initCounter?: InitCounter;
+  /** Number of digits the counter should have */
+  digits?: number;
+  /** Whether to ignore increment on edit operations */
+  ignoreIncrementOnEdit?: boolean;
+  /** Custom date function (useful for testing) */
+  getCurrentDate?: () => Date;
 }
 
 /**
- * 
- * @param counter 
- * @param size 
+ * Default options
  */
-export const addZeros = (counter: number, size: number) => {
-  let counterString = counter.toString();
-  while (counterString.length < size) counterString = "0" + counterString;
-  return counterString;
-}
+const DEFAULT_OPTIONS: Required<SerialOptions> = {
+  field: "serialNumber",
+  prefix: "",
+  format: "",
+  separator: "-",
+  initCounter: InitCounter.NEVER,
+  digits: 10,
+  ignoreIncrementOnEdit: true,
+  getCurrentDate: () => new Date()
+};
 
 /**
- * 
- * @param options 
- * @param serial 
+ * Adds leading zeros to a number
+ * @param counter - The number to pad
+ * @param size - The target length
+ * @returns Padded string
  */
-export const extractCounter = (options: Options, serial: string): string => {
-  let { separator, initCounter, digits = 10, ignoreIncrementOnEdit } = options
-  let counter: string
+export const addZeros = (counter: number, size: number): string => {
+  if (size <= 0) return counter.toString();
+  return counter.toString().padStart(size, "0");
+};
 
-  if (serial !== null) {
-    counter = serial.split(separator).slice(-1).join(separator)
-    let chunks = serial.split(separator)
-    switch (initCounter) {
-      case InitCounter.YEARLY:
-        let currentYear = new Date().getFullYear().toString()
-        let year = chunks[chunks.length - 2]
-        if (currentYear !== year)
-          return addZeros(1, digits)
-        break
-      case InitCounter.MONTHLY:
-        let currentMonth = addZeros(new Date().getMonth() + 1, 2)
-        let month = chunks[chunks.length - 2]
-        if (currentMonth !== month)
-          return addZeros(1, digits)
-        break
-      case InitCounter.DAILY:
-        let currentDay = addZeros(new Date().getDate(), 2)
-        let day = chunks[chunks.length - 2]
-        if (currentDay !== day)
-          return addZeros(1, digits)
-        break
+/**
+ * Extracts and increments counter from existing serial number
+ * @param options - Plugin options
+ * @param serial - Existing serial number
+ * @returns Next counter value
+ */
+export const extractCounter = (options: Required<SerialOptions>, serial: string | null): string => {
+  const { separator, initCounter, digits } = options;
+  
+  if (!serial) {
+    return addZeros(1, digits);
+  }
+
+  const chunks = serial.split(separator);
+  const counter = chunks[chunks.length - 1];
+  
+  // Check if we need to reset counter based on time period
+  if (initCounter !== InitCounter.NEVER) {
+    const currentDate = options.getCurrentDate();
+    const shouldReset = checkCounterReset(chunks, initCounter, currentDate);
+    if (shouldReset) {
+      return addZeros(1, digits);
     }
+  }
 
-    return addZeros(parseInt(counter) + 1, digits)
-  } else
-    return addZeros(1, digits)
-}
+  const currentCounter = parseInt(counter, 10);
+  if (isNaN(currentCounter)) {
+    return addZeros(1, digits);
+  }
+
+  return addZeros(currentCounter + 1, digits);
+};
 
 /**
- * 
- * @param schema 
- * @param options 
+ * Checks if counter should be reset based on time period
  */
-export const plugin = (schema: Schema, options: Options) => {
-  let { field, prefix, separator, initCounter, ignoreIncrementOnEdit = true } = options
-  let counter;
+const checkCounterReset = (
+  chunks: string[],
+  initCounter: InitCounter,
+  currentDate: Date
+): boolean => {
+  switch (initCounter) {
+    case InitCounter.YEARLY: {
+      const currentYear = currentDate.getFullYear().toString();
+      const year = chunks[chunks.length - 2];
+      return currentYear !== year;
+    }
+      
+    case InitCounter.MONTHLY: {
+      const currentMonth = addZeros(currentDate.getMonth() + 1, 2);
+      const month = chunks[chunks.length - 2];
+      return currentMonth !== month;
+    }
+      
+    case InitCounter.DAILY: {
+      const currentDay = addZeros(currentDate.getDate(), 2);
+      const day = chunks[chunks.length - 2];
+      return currentDay !== day;
+    }
+      
+    case InitCounter.HOURLY: {
+      const currentHour = addZeros(currentDate.getHours(), 2);
+      const hour = chunks[chunks.length - 2];
+      return currentHour !== hour;
+    }
+      
+    default:
+      return false;
+  }
+};
+
+/**
+ * Generates date string based on initCounter
+ */
+const generateDateString = (
+  initCounter: InitCounter,
+  currentDate: Date,
+  separator: string
+): string => {
+  const year = currentDate.getFullYear().toString();
+  const month = addZeros(currentDate.getMonth() + 1, 2);
+  const day = addZeros(currentDate.getDate(), 2);
+  const hour = addZeros(currentDate.getHours(), 2);
+
+  switch (initCounter) {
+    case InitCounter.YEARLY:
+      return year;
+    case InitCounter.MONTHLY:
+      return [year, month].join(separator);
+    case InitCounter.DAILY:
+      return [year, month, day].join(separator);
+    case InitCounter.HOURLY:
+      return [year, month, day, hour].join(separator);
+    default:
+      return "";
+  }
+};
+
+/**
+ * Validates plugin options
+ */
+const validateOptions = (options: SerialOptions): void => {
+  if (!options.field) {
+    throw new Error("Field name is required");
+  }
+  
+  if (options.digits !== undefined && (options.digits < 1 || options.digits > 20)) {
+    throw new Error("Digits must be between 1 and 20");
+  }
+  
+  if (options.separator && options.separator.length > 1) {
+    throw new Error("Separator must be a single character");
+  }
+};
+
+/**
+ * Mongoose plugin for auto-incrementing serial numbers
+ * @param schema - Mongoose schema
+ * @param options - Plugin options
+ */
+export const plugin = (schema: Schema, options: SerialOptions): void => {
+  // Merge with defaults
+  const opts: Required<SerialOptions> = { ...DEFAULT_OPTIONS, ...options };
+  
+  // Validate options
+  validateOptions(opts);
+  
+  // Check if field exists and is string type
+  if (!schema.path(opts.field)) {
+    throw new Error(`Field '${opts.field}' does not exist in schema`);
+  }
+  
+  if (!(schema.path(opts.field) instanceof mongoose.Schema.Types.String)) {
+    throw new Error(`Field '${opts.field}' must be of type String`);
+  }
+
   schema.pre("save", async function (next) {
-    let doc: any = this
-    // feild must a string
-    if (!(schema.path(field) instanceof mongoose.Schema.Types.String)) {
-      next(Error("Field must be type of string"))
-    }
-
-    // get the last inserted document
-    let lastDoc;
     try {
-      lastDoc = await (<any>this).constructor.findOne({}).sort({ [`${field}`]: -1 })
+      const doc = this as Document;
+      
+      // Skip if field already has a value and we're ignoring increments on edit
+      if (opts.ignoreIncrementOnEdit && doc.get(opts.field)) {
+        return next();
+      }
+
+      // Get the last document with the highest serial number
+      const lastDoc = await (doc.constructor as mongoose.Model<Document>).findOne({})
+        .sort({ [opts.field]: -1 })
+        .lean();
+
+      const lastSerial = lastDoc ? (lastDoc as any)[opts.field] : null;
+      const counter = extractCounter(opts, lastSerial);
+      
+      // Generate date string if needed
+      const dateString = opts.initCounter !== InitCounter.NEVER 
+        ? generateDateString(opts.initCounter, opts.getCurrentDate(), opts.separator)
+        : "";
+
+      // Build serial number parts
+      const parts: string[] = [];
+      if (opts.prefix) parts.push(opts.prefix);
+      if (dateString) parts.push(dateString);
+      parts.push(counter);
+
+      // Set the serial number
+      doc.set(opts.field, parts.join(opts.separator));
+      
+      next();
     } catch (error) {
-      throw error
+      next(error as Error);
     }
-    let serial = lastDoc ? lastDoc[field] : null
+  });
+};
 
-    counter = extractCounter(options, serial)
-    
-    // if doc[field] has some value then
-    // we are editing an existing record
-    if(ignoreIncrementOnEdit && doc[field] && doc[field].length > 0) {
-        next()
-        return
-    }
-
-    // retrive the last count
-    let dating;
-    switch (initCounter) {
-      case InitCounter.YEARLY:
-        dating = new Date().getFullYear().toString()
-        break
-      case InitCounter.MONTHLY:
-        dating = [new Date().getFullYear().toString(), addZeros(new Date().getMonth() + 1, 2)].join(separator)
-        break
-      case InitCounter.DAILY:
-        dating = [new Date().getFullYear().toString(), addZeros(new Date().getMonth() + 1, 2), addZeros(new Date().getDate(), 2)].join(separator)
-        break
-    }
-    let t = []
-    if (prefix) t.push(prefix)
-    if (dating) t.push(dating)
-    t.push(counter)
-    doc[field] = t.join(separator)
-    next()
-  })
-}
+// Export default plugin
+export default plugin;
 
