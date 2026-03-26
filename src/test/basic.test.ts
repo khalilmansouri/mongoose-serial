@@ -1,13 +1,19 @@
-import { expect, assert } from "chai";
+import { assert } from "chai";
+import { plugin, InitCounter } from '../index';
 
-const async = require('async')
-const mongoose = require('mongoose')
-const { plugin } = require('../')
+const async = require('async');
+const mongoose = require('mongoose');
 let connection: any;
-const should = require('chai').should()
+const should = require('chai').should();
 
-
-let options = { field: 'serial', prefix: "Invoice", separator: "-", digits: 5, initCounter: "monthly", ignoreIncrementOnEdit: false }
+const options = { 
+  field: 'serial', 
+  prefix: "Invoice", 
+  separator: "-", 
+  digits: 5, 
+  initCounter: InitCounter.MONTHLY, 
+  ignoreIncrementOnEdit: false 
+};
 
 // create invoice model
 var invoiceSchema = new mongoose.Schema({

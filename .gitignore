@@ -1,13 +1,54 @@
-.DS_Store
+# Dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Build outputs
+lib/
+dist/
+*.tsbuildinfo
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# IDE
+.vscode/
 .idea/
-.tscache/
+*.swp
+*.swo
+*~
 
-# Dependency directory
-node_modules
+# OS
+.DS_Store
+Thumbs.db
 
-/lib
+# Logs
+logs/
+*.log
 
-# Coverage directory used by tools like istanbul
-coverage
-.nyc_output
-coverage.*
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Optional npm cache directory
+.npm
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn Integrity file
+.yarn-integrity

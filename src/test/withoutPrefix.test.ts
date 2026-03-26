@@ -1,12 +1,18 @@
-import { expect } from "chai";
-const async = require('async')
-const mongoose = require('mongoose')
-const { plugin } = require('../')
+// import { expect } from "chai";
+import { plugin, InitCounter } from '../index';
+
+const async = require('async');
+const mongoose = require('mongoose');
 let connection: any;
-const should = require('chai').should()
+const should = require('chai').should();
 
-
-let options = { field: 'serial', separator: "-", digits: 5, initCounter: "yearly", ignoreIncrementOnEdit: false}
+const options = { 
+  field: 'serial', 
+  separator: "-", 
+  digits: 5, 
+  initCounter: InitCounter.YEARLY, 
+  ignoreIncrementOnEdit: false 
+};
 
 before(function (done) {
   connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-wihtout-prefix', { useNewUrlParser: true, useUnifiedTopology: true });
