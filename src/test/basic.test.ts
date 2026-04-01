@@ -1,18 +1,16 @@
-import { assert } from "chai";
+import { expect } from "chai";
 import { plugin, InitCounter } from '../index';
 
-const async = require('async');
 const mongoose = require('mongoose');
 let connection: any;
-const should = require('chai').should();
 
-const options = { 
-  field: 'serial', 
-  prefix: "Invoice", 
-  separator: "-", 
-  digits: 5, 
-  initCounter: InitCounter.MONTHLY, 
-  ignoreIncrementOnEdit: false 
+const options = {
+  field: 'serial',
+  prefix: "Invoice",
+  separator: "-",
+  digits: 5,
+  initCounter: InitCounter.MONTHLY,
+  ignoreIncrementOnEdit: false
 };
 
 // create invoice model
@@ -22,111 +20,54 @@ var invoiceSchema = new mongoose.Schema({
     ttc: Number,
 });
 
-before(function (done) {
-  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-basic', { useNewUrlParser: true, useUnifiedTopology: true });
-  connection.on('error', console.error.bind(console));
-  connection.once('open', function () {
-    done();
-  });
+before(async function () {
+  connection = mongoose.createConnection('mongodb://127.0.0.1/mongoose-serial-basic');
+  await connection.asPromise();
 });
 
-after(function (done) {
-  connection.db.dropDatabase(function (err: any) {
-    if (err) return done(err);
-    connection.close(done);
-  });
+after(async function () {
+  await connection.db.dropDatabase();
+  await connection.close();
 });
-
-
 
 describe('Mongoose-serial', function () {
 
-  it('should save the Invoices', function (done) {
-
+  it('should save the Invoices', async function () {
     invoiceSchema.plugin(plugin, options);
     let Invoice = connection.model('Invoice', invoiceSchema);
-    let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
-    let invoice2 = new Invoice({ ht: 12000, ttc: 12010 });
-    let invoice3 = new Invoice({ ht: 13000, ttc: 12010 });
-    let invoice4 = new Invoice({ ht: 14000, ttc: 12010 });
 
+    const invoice1 = await new Invoice({ ht: 10000, ttc: 10010 }).save();
+    const invoice2 = await new Invoice({ ht: 12000, ttc: 12010 }).save();
+    await new Invoice({ ht: 13000, ttc: 12010 }).save();
+    await new Invoice({ ht: 14000, ttc: 12010 }).save();
 
-    // insert some invoices
-    async.series({
-      invoice1: function (cb: any) {
-        invoice1.save(cb);
-      },
-      invoice2: function (cb: any) {
-        invoice2.save(cb);
-      },
-      invoice3: function (cb: any) {
-        invoice3.save(cb);
-      },
-      invoice4: function (cb: any) {
-        invoice4.save(cb);
-      }
-    }, assert);
-
-    // assert
-    function assert(err: any, results: any) {
-      should.not.exist(err);
-      results.invoice1.should.have.property('ht', 10000);
-      results.invoice2.should.have.property('ht', 12000);
-      done();
-    }
-
+    expect(invoice1).to.have.property('ht', 10000);
+    expect(invoice2).to.have.property('ht', 12000);
+    expect(invoice1.serial).to.be.a('string');
+    expect(invoice2.serial).to.be.a('string');
   });
 
-  it('should not increment Invoices on edit operation', function (done) {
+  it('should not increment Invoices on edit operation', async function () {
+    const editSchema = new mongoose.Schema({
+      serial: String,
+      ht: Number,
+      ttc: Number,
+    });
+    editSchema.plugin(plugin, { ...options, ignoreIncrementOnEdit: true });
+    const Invoice = connection.model('Invoice2', editSchema);
 
-    // set updateExisitingRecord to true
-    options.ignoreIncrementOnEdit = true;
+    await new Invoice({ ht: 10000, ttc: 10010 }).save();
+    await new Invoice({ ht: 12000, ttc: 12010 }).save();
+    await new Invoice({ ht: 13000, ttc: 12010 }).save();
+    await new Invoice({ ht: 14000, ttc: 12010 }).save();
 
-    invoiceSchema.plugin(plugin, options);
-    let Invoice = connection.model('Invoice2', invoiceSchema);
-    let invoice1 = new Invoice({ ht: 10000, ttc: 10010 });
-    let invoice2 = new Invoice({ ht: 12000, ttc: 12010 });
-    let invoice3 = new Invoice({ ht: 13000, ttc: 12010 });
-    let invoice4 = new Invoice({ ht: 14000, ttc: 12010 });
+    // retrieve an existing invoice record
+    let data = await Invoice.findOne({ ht: 12000 });
+    const serial = data.serial;
+    data.ht = 15000;
+    await data.save();
 
-
-    // insert some invoices
-    async.series({
-      invoice1: function (cb: any) {
-        invoice1.save(cb);
-      },
-      invoice2: function (cb: any) {
-        invoice2.save(cb);
-      },
-      invoice3: function (cb: any) {
-        invoice3.save(cb);
-      },
-      invoice4: function (cb: any) {
-        invoice4.save(cb);
-      }
-    }, assertRecord);
-
-    // assert
-    function assertRecord(err: any, results: any) {
-      should.not.exist(err);
-      results.invoice1.should.have.property('ht', 10000);
-      results.invoice2.should.have.property('ht', 12000);
-      done();
-    }
-
-    // retrieve any existing invoice record
-    Invoice.findOne({ht:12000})
-    .then(function(data: any) {
-        const serial = data.serial;
-        data.ht = 15000;
-        data.save().then(function() {
-            Invoice.findOne({ht: 15000})
-            .then(function(verifyData: any) {
-                assert(serial === verifyData.serial, 'Edit operation should not increment invoice serial');
-            })
-            .catch(function(error: any){ throw error});
-        })
-    })
-    .catch(function(error: any){throw error});
+    let verifyData = await Invoice.findOne({ ht: 15000 });
+    expect(verifyData.serial).to.equal(serial, 'Edit operation should not increment invoice serial');
   });
-})
+});

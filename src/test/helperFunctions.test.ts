@@ -26,7 +26,7 @@ describe('Helper-functions', function () {
   })
 
   it('should extract and increment counter number daily', () => {
-      const date = new Date().getDate();
+    const date = addZeros(new Date().getDate(), 2);
     let serial = ["INVOICE", "2021", "03", date, "00301"].join(options.separator)
     let ret = extractCounter({ ...options, initCounter: InitCounter.DAILY, getCurrentDate: () => new Date() }, serial)
     expect(ret).to.equal('00302')
