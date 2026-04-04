@@ -1,6 +1,6 @@
 {
   "name": "mongoose-serial",
-  "version": "1.0.5",
+  "version": "2.0.0",
   "description": "Mongoose plugin for generating auto-incrementing serial numbers with flexible formatting options",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
