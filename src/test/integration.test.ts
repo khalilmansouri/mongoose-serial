@@ -56,6 +56,14 @@ describe('Integration Tests - Plugin Functionality', () => {
     expect(() => {
       schema.plugin(plugin, { field: 'serialNumber', separator: '--' });
     }).to.throw('Separator must be a single character');
+
+    expect(() => {
+      schema.plugin(plugin, { field: 'serialNumber', startFrom: -1 });
+    }).to.throw('startFrom must be a non-negative integer');
+
+    expect(() => {
+      schema.plugin(plugin, { field: 'serialNumber', startFrom: 1.5 });
+    }).to.throw('startFrom must be a non-negative integer');
   });
 
   it('should work with different InitCounter values', () => {

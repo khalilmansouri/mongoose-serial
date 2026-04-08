@@ -93,6 +93,7 @@ await invoice2.save(); // serialNumber: "INV-2024-04-00001"
 | `separator` | `string` | `"-"` | Separator between parts |
 | `digits` | `number` | `10` | Number of digits for the counter (1-20) |
 | `initCounter` | `InitCounter` | `InitCounter.NEVER` | When to reset the counter |
+| `startFrom` | `number` | `1` | Starting counter value (also used when counter resets) |
 | `ignoreIncrementOnEdit` | `boolean` | `true` | Skip increment on document updates |
 | `getCurrentDate` | `() => Date` | `() => new Date()` | Custom date function (useful for testing) |
 
@@ -144,6 +145,32 @@ ticketSchema.plugin(mongooseSerial, {
 // Result: "TKT/2024/03/000001"
 ```
 
+### Custom Starting Counter
+
+```typescript
+// Start numbering from a specific value (e.g., continuing from a legacy system)
+invoiceSchema.plugin(mongooseSerial, {
+  field: 'serialNumber',
+  prefix: 'INV',
+  separator: '-',
+  digits: 5,
+  startFrom: 1000
+});
+// Result: "INV-01000", "INV-01001", "INV-01002"
+
+// Works with time-based resets too — counter resets back to startFrom
+invoiceSchema.plugin(mongooseSerial, {
+  field: 'serialNumber',
+  prefix: 'INV',
+  separator: '-',
+  digits: 5,
+  initCounter: InitCounter.YEARLY,
+  startFrom: 500
+});
+// 2024: "INV-2024-00500", "INV-2024-00501"
+// 2025: "INV-2025-00500", "INV-2025-00501"  ← resets to 500, not 1
+```
+
 ### Without Prefix or Date
 
 ```typescript
@@ -189,6 +216,7 @@ Common validation errors:
 - Field must be of type String
 - Digits must be between 1 and 20
 - Separator must be a single character
+- `startFrom` must be a non-negative integer
 
 ## Performance Considerations
 

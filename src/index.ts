@@ -32,6 +32,8 @@ export interface SerialOptions {
   ignoreIncrementOnEdit?: boolean;
   /** Custom date function (useful for testing) */
   getCurrentDate?: () => Date;
+  /** Starting counter value (defaults to 1) */
+  startFrom?: number;
 }
 
 /**
@@ -45,7 +47,8 @@ const DEFAULT_OPTIONS: Required<SerialOptions> = {
   initCounter: InitCounter.NEVER,
   digits: 10,
   ignoreIncrementOnEdit: true,
-  getCurrentDate: () => new Date()
+  getCurrentDate: () => new Date(),
+  startFrom: 1
 };
 
 /**
@@ -66,27 +69,27 @@ export const addZeros = (counter: number, size: number): string => {
  * @returns Next counter value
  */
 export const extractCounter = (options: Required<SerialOptions>, serial: string | null): string => {
-  const { separator, initCounter, digits } = options;
-  
+  const { separator, initCounter, digits, startFrom } = options;
+
   if (!serial) {
-    return addZeros(1, digits);
+    return addZeros(startFrom, digits);
   }
 
   const chunks = serial.split(separator);
   const counter = chunks[chunks.length - 1];
-  
+
   // Check if we need to reset counter based on time period
   if (initCounter !== InitCounter.NEVER) {
     const currentDate = options.getCurrentDate();
     const shouldReset = checkCounterReset(chunks, initCounter, currentDate);
     if (shouldReset) {
-      return addZeros(1, digits);
+      return addZeros(startFrom, digits);
     }
   }
 
   const currentCounter = parseInt(counter, 10);
   if (isNaN(currentCounter)) {
-    return addZeros(1, digits);
+    return addZeros(startFrom, digits);
   }
 
   return addZeros(currentCounter + 1, digits);
@@ -171,6 +174,10 @@ const validateOptions = (options: SerialOptions): void => {
   
   if (options.separator && options.separator.length > 1) {
     throw new Error("Separator must be a single character");
+  }
+
+  if (options.startFrom !== undefined && (!Number.isInteger(options.startFrom) || options.startFrom < 0)) {
+    throw new Error("startFrom must be a non-negative integer");
   }
 };
 
