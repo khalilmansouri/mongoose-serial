@@ -1,14 +1,15 @@
 import { expect } from "chai";
 import { addZeros, extractCounter, InitCounter } from '../index';
 
-const options = { 
-  field: 'serial', 
-  prefix: "Invoice", 
-  format: "PREFIX", 
-  separator: "-", 
-  digits: 5, 
-  initCounter: InitCounter.DAILY, 
-  ignoreIncrementOnEdit: false 
+const options = {
+  field: 'serial',
+  prefix: "Invoice",
+  format: "PREFIX",
+  separator: "-",
+  digits: 5,
+  initCounter: InitCounter.DAILY,
+  ignoreIncrementOnEdit: false,
+  startFrom: 1
 };
 
 describe('Helper-functions', function () {

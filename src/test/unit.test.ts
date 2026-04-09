@@ -25,12 +25,19 @@ describe('Unit Tests - Core Functions', () => {
       initCounter: InitCounter.NEVER,
       digits: 5,
       ignoreIncrementOnEdit: true,
-      getCurrentDate: () => new Date('2024-03-15T10:00:00Z')
+      getCurrentDate: () => new Date('2024-03-15T10:00:00Z'),
+      startFrom: 1
     };
 
     it('should return 1 for null serial', () => {
       const result = extractCounter(baseOptions, null);
       expect(result).to.equal('00001');
+    });
+
+    it('should return startFrom for null serial', () => {
+      const options = { ...baseOptions, startFrom: 100 };
+      const result = extractCounter(options, null);
+      expect(result).to.equal('00100');
     });
 
     it('should increment counter for existing serial', () => {
@@ -62,16 +69,24 @@ describe('Unit Tests - Core Functions', () => {
       expect(result).to.equal('00001'); // Should reset for new hour
     });
 
+    it('should reset to startFrom on period rollover', () => {
+      const options = { ...baseOptions, initCounter: InitCounter.YEARLY, startFrom: 50 };
+      const result = extractCounter(options, 'TEST-2023-00050');
+      expect(result).to.equal('00050'); // resets to startFrom, not 1
+    });
+
+    it('should handle invalid counter gracefully using startFrom', () => {
+      const options = { ...baseOptions, startFrom: 10 };
+      const result = extractCounter(options, 'TEST-INVALID');
+      expect(result).to.equal('00010');
+    });
+
     it('should not reset for same time period', () => {
       const options = { ...baseOptions, initCounter: InitCounter.MONTHLY };
       const result = extractCounter(options, 'TEST-2024-03-00001');
       expect(result).to.equal('00002'); // Should increment, not reset
     });
 
-    it('should handle invalid counter gracefully', () => {
-      const result = extractCounter(baseOptions, 'TEST-INVALID');
-      expect(result).to.equal('00001');
-    });
   });
 
   describe('InitCounter enum', () => {
