@@ -4,6 +4,13 @@
   "description": "Mongoose plugin for generating auto-incrementing serial numbers with flexible formatting options",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/index.d.ts",
+      "require": "./lib/index.js",
+      "default": "./lib/index.js"
+    }
+  },
   "scripts": {
     "pretest": "npm run build",
     "test": "nyc mocha -r ts-node/register src/**/*.test.ts",
