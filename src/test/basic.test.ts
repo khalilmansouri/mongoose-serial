@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { plugin, InitCounter } from '../index';
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 let connection: any;
 
 const options = {
@@ -14,7 +14,7 @@ const options = {
 };
 
 // create invoice model
-var invoiceSchema = new mongoose.Schema({
+const invoiceSchema = new mongoose.Schema({
     serial: String,
     ht: Number,
     ttc: Number,
@@ -34,7 +34,7 @@ describe('Mongoose-serial', function () {
 
   it('should save the Invoices', async function () {
     invoiceSchema.plugin(plugin, options);
-    let Invoice = connection.model('Invoice', invoiceSchema);
+    const Invoice = connection.model('Invoice', invoiceSchema);
 
     const invoice1 = await new Invoice({ ht: 10000, ttc: 10010 }).save();
     const invoice2 = await new Invoice({ ht: 12000, ttc: 12010 }).save();
@@ -62,12 +62,12 @@ describe('Mongoose-serial', function () {
     await new Invoice({ ht: 14000, ttc: 12010 }).save();
 
     // retrieve an existing invoice record
-    let data = await Invoice.findOne({ ht: 12000 });
+    const data = await Invoice.findOne({ ht: 12000 });
     const serial = data.serial;
     data.ht = 15000;
     await data.save();
 
-    let verifyData = await Invoice.findOne({ ht: 15000 });
+    const verifyData = await Invoice.findOne({ ht: 15000 });
     expect(verifyData.serial).to.equal(serial, 'Edit operation should not increment invoice serial');
   });
 });

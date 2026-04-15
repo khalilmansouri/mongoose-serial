@@ -1,7 +1,7 @@
 import { expect } from "chai";
 import { plugin, InitCounter } from '../index';
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 let connection: any;
 
 const options = {
@@ -25,13 +25,13 @@ after(async function () {
 describe('Mongoose-serial : Without prefix and date', function () {
 
   it('should save the Invoices', async function () {
-    var invoiceSchema = new mongoose.Schema({
+    const invoiceSchema = new mongoose.Schema({
       serial: String,
       ht: Number,
       ttc: Number,
     });
     invoiceSchema.plugin(plugin, options);
-    let Invoice = connection.model('Invoice', invoiceSchema);
+    const Invoice = connection.model('Invoice', invoiceSchema);
 
     const invoice1 = await new Invoice({ ht: 10000, ttc: 10010 }).save();
     const invoice2 = await new Invoice({ ht: 12000, ttc: 12010 }).save();

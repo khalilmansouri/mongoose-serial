@@ -1,7 +1,7 @@
 import { expect } from "chai";
-import { plugin, InitCounter } from '../index';
+import { plugin, InitCounter, extractCounter } from '../index';
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 let connection: any;
 
 before(async function () {
@@ -56,7 +56,6 @@ describe('Mongoose-serial with startFrom', function () {
 
     // Now simulate a year rollover by updating the date function on the options
     // We create a second model with a different date to verify reset behavior via extractCounter directly
-    const { extractCounter } = require('../index');
     const opts = {
       field: 'serial',
       prefix: '',
